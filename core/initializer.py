@@ -22,48 +22,10 @@ class Initializer(object):
         raise NotImplementedError
 
 
-class NormalInit(Initializer):
-
-    def __init__(self, mean=0.0, std=1.0):
-        self._mean = mean
-        self._std = std
-
-    def init(self, shape):
-        return np.random.normal(loc=self._mean, scale=self._std, size=shape)
-
-
-class TruncatedNormalInit(Initializer):
-
-    def __init__(self, mean=0.0, std=1.0):
-        self._tn = stats.truncnorm(- 2 * std, 2 * std, loc=mean, scale=std)
-
-    def init(self, shape):
-        return self._tn.rvs(size=shape)
-
-
-class UniformInit(Initializer):
-
-    def __init__(self, a=0.0, b=1.0):
-        self._a = a
-        self._b = b
-
-    def init(self, shape):
-        return np.random.uniform(low=self._a, high=self._b, size=shape)
-
-
 class ZerosInit(Initializer):
 
     def init(self, shape):
         return np.zeros(shape=shape)
-
-
-class ConstantInit(Initializer):
-
-    def __init__(self, val):
-        self._val = val
-
-    def init(self, shape):
-        return np.full(shape=shape, fill_value=self._val)
 
 
 class XavierUniformInit(Initializer):

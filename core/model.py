@@ -43,9 +43,9 @@ class Model(object):
             net = pickle.load(f)
         for l1, l2 in zip(self.net.layers, net.layers):
             if l1.shape != l2.shape:
-                raise ValueError("Incompatible architecture. %s in loaded model"
-                                 " and %s in defined model." %
-                                 (l1.shape, l2.shape))
+                raise ValueError(
+                    "Incompatible architecture. %s in loaded model and %s in"
+                    " defined model." % (l1.shape, l2.shape))
             else:
                 print("%s: %s" % (l1.name, l1.shape))
         self.net = net
