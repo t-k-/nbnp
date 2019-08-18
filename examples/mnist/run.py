@@ -91,13 +91,13 @@ def main(args):
             loss, grads = model.backward(pred, batch.targets)
             model.apply_grad(grads)
             loss_list.append(loss)
-        print("Epoch %d time cost: %.4f" % (epoch, time.time() - t_start))
+        t_end = time.time()
         # evaluate
         test_pred = model.forward(test_x)
         test_pred_idx = np.argmax(test_pred, axis=1)
         test_y_idx = np.asarray(test_y)
         res = evaluator.evaluate(test_pred_idx, test_y_idx)
-        print(res)
+        print("Epoch %d time cost: %.4f\t %s" % (epoch, t_end - t_start, res))
 
 
 if __name__ == "__main__":
