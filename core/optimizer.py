@@ -38,15 +38,6 @@ class BaseOptimizer(object):
         raise NotImplementedError
 
 
-class SGD(BaseOptimizer):
-
-    def __init__(self, lr, weight_decay=0.0):
-        super().__init__(lr, weight_decay)
-
-    def _compute_step(self, grad):
-        return - self.lr * grad
-
-
 class Adam(BaseOptimizer):
 
     def __init__(self,

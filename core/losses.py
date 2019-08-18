@@ -43,5 +43,5 @@ class SoftmaxCrossEntropyLoss(BaseLoss):
     def grad(self, predicted, actual):
         m = predicted.shape[0]
         grad = np.copy(predicted)
-        grad[range(m), actual] -= 1.0
+        grad -= actual
         return grad / m
