@@ -68,9 +68,9 @@ def run_tinynn(dataset):
     train_x, train_y, test_x, test_y = dataset
 
     net = Net([
-        Dense(784, 700),
+        Dense(784, 400),
         ReLU(),
-        Dense(700, 100),
+        Dense(400, 100),
         ReLU(),
         Dense(100, 10),
     ])
@@ -81,18 +81,16 @@ def run_tinynn(dataset):
     iterator = BatchIterator(batch_size=BATCH_SIZE)
     evaluator = AccEvaluator()
     for epoch in range(NUM_EPS):
-        t_start = time.time()
         for batch in iterator(train_x, train_y):
             pred = model.forward(batch.inputs)
             loss, grads = model.backward(pred, batch.targets)
             model.apply_grad(grads)
-        t_end = time.time()
         # evaluate
         test_pred = model.forward(test_x)
         test_pred_idx = np.argmax(test_pred, axis=1)
         test_y_idx = np.asarray(test_y)
         res = evaluator.evaluate(test_pred_idx, test_y_idx)
-        print("Epoch %d time cost: %.4f\t %s" % (epoch, t_end - t_start, res))
+        print("Epoch %d \t %s" % (epoch, res))
 
 
 def run_tf(dataset):
@@ -105,17 +103,15 @@ def run_tf(dataset):
     iterator = BatchIterator(batch_size=BATCH_SIZE)
     evaluator = AccEvaluator()
     for epoch in range(NUM_EPS):
-        t_start = time.time()
         for batch in iterator(train_x, train_y):
             sess.run(train_op, feed_dict={
                 x_ph: batch.inputs, y_ph: batch.targets, is_train_ph: True})
-        t_end = time.time()
         # evaluate
         test_pred = sess.run(out, feed_dict={x_ph: test_x, is_train_ph: False})
         test_pred_idx = np.argmax(test_pred, axis=1)
         test_y_idx = np.asarray(test_y)
         res = evaluator.evaluate(test_pred_idx, test_y_idx)
-        print("Epoch %d time cost: %.4f\t %s" % (epoch, t_end - t_start, res))
+        print("Epoch %d \t %s" % (epoch, res))
 
 
 def tf_dense():
