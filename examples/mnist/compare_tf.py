@@ -5,11 +5,9 @@
 
 import runtime_path  # isort:skip
 
-import argparse
 import gzip
 import os
 import pickle
-import time
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
