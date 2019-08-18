@@ -28,7 +28,6 @@ class MSELoss(BaseLoss):
 
 
 class SoftmaxCrossEntropyLoss(BaseLoss):
-    """L = (-log(exp(x[class]) / sum(exp(x))))"""
 
     def loss(self, predicted, actual):
         m = predicted.shape[0]

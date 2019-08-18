@@ -68,9 +68,9 @@ def run_tinynn(dataset):
     train_x, train_y, test_x, test_y = dataset
 
     net = Net([
-        Dense(784, 400),
+        Dense(784, 700),
         ReLU(),
-        Dense(400, 100),
+        Dense(700, 100),
         ReLU(),
         Dense(100, 10),
     ])
