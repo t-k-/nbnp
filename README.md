@@ -1,11 +1,17 @@
+
 ## tinynn
 
 
 ### Basic
 
-tinynn 是一个基于 python 和 Numpy 实现的轻量级、易于扩展的深度学习框架。相关介绍看[这篇文章]()
+tinynn is a lightweight deep learning framework build with pure Python3 and NumPy.
 
-这个代码库有主要有两个分支，`mini` 分支实现了最基本最核心的框架组件，`master` 分支在 `mini` 分支的基础上进行扩展，支持更多的功能
+<p align="center">
+  <img src="http://ww4.sinaimg.cn/large/006tNc79gy1g63tkgdh1pj30to0fwjsk.jpg" width="80%" alt="tinynn-architecture" referrerPolicy="no-referrer"/>
+</p>
+
+The `mini` branch implements the minimal components to run a neural network.
+
 
 ### Getting Started
 
@@ -14,7 +20,7 @@ tinynn 是一个基于 python 和 Numpy 实现的轻量级、易于扩展的深�
 ```bash
 git clone https://github.com/borgwang/tinynn.git
 cd tinynn
-pip install -r requirment.txt
+pip install -r requirements.txt
 ```
 
 #### Examples
@@ -23,11 +29,16 @@ pip install -r requirment.txt
 cd tinynn
 # MNIST classification
 python examples/mnist/run.py  
-# a toy regression task
-python examples/nn_paint/run.py  
- # reinforcement learning demo (gym environment required)
-python examples/rl/run_dqn.py 
 ```
+
+
+#### Components
+
+- layers: Dense
+- activation: ReLU, Sigmoid
+- losses: SoftmaxCrossEntropy, MSE
+- optimizer: Adam
+
 
 #### License
 
