@@ -50,7 +50,8 @@ def disp_mnist_array(arr, label='unknown'):
     arr_copy = arr[:]
     arr_copy.resize(28,28)
     fig, ax = plt.subplots(1)
-    ax.imshow(arr_copy, cmap='gray', interpolation='nearest', vmin=0, vmax=1)
+    #ax.imshow(arr_copy, cmap='gray', interpolation='nearest', vmin=0, vmax=1)
+    ax.imshow(arr_copy)
     ax.text(0.5, 1.5, 'label: %s' % label, bbox={'facecolor': 'white'})
     plt.show()
 
@@ -64,7 +65,7 @@ def main(args):
     test_x, test_y = test_set
     train_y = get_one_hot(train_y, 10)
 
-    choose=315
+    choose=72
     restore_img = test_x[choose].reshape((1, 784)).clip(min=0, max=0.6)
     ####### np.random.uniform(0, 0.0, (1, 784))
     disp_mnist_array(restore_img, test_y[choose])
@@ -100,7 +101,7 @@ def main(args):
     else:
         raise ValueError("Invalid argument model_type! Must be 'cnn' or 'dense'")
 
-    adam2=Adam(lr=args.lr)
+    adam2=Adam()
     loss2=SoftmaxCrossEntropyLoss()
     # loss2=MSELoss()
 
@@ -138,7 +139,9 @@ def main(args):
     # target_layer[0][7] = 1.0
 
     target_layer = np.zeros((1, 10))
-    target_layer[0][((9))] = 1.0
+    target_layer[0][((2))] = 1.0
+
+    grad_acc = np.zeros((1, 784))
 
     for epoch in range(100 * 128):
 
@@ -156,7 +159,6 @@ def main(args):
         if epoch % 128 == 0:
             pred_num = np.argmax(pred, axis=1)
             print(epoch, loss, pred_num, pred[0][pred_num], pred[0][(pred_num + 1) % 10])
-            print(restore_img.min(), restore_img.max())
 
         #for layer in reversed(net.layers[:6]):
         for layer in reversed(net.layers):
@@ -168,6 +170,12 @@ def main(args):
         step = flat_step.reshape(1, 784)
         restore_img += step
         restore_img = restore_img.clip(min=0, max=1.0)
+        grad_acc += grad
+
+        #break
+
+    print(grad_acc.min(), grad_acc.max())
+    disp_mnist_array(grad_acc)
     disp_mnist_array(restore_img)
 
 if __name__ == "__main__":
