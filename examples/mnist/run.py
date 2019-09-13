@@ -100,8 +100,8 @@ def main(args):
         raise ValueError("Invalid argument model_type! Must be 'cnn' or 'dense'")
 
     adam2=Adam(lr=4e-2)
-    loss2=SoftmaxCrossEntropyLoss()
-    #loss2=MSELoss()
+    # loss2=SoftmaxCrossEntropyLoss()
+    loss2=MSELoss()
 
     model = Model(net=net, loss=SoftmaxCrossEntropyLoss(), optimizer=Adam(lr=args.lr))
 
@@ -137,7 +137,7 @@ def main(args):
     # target_layer[0][7] = 1.0
 
     target_layer = np.zeros((1, 10))
-    target_layer[0][7] = 1.0
+    target_layer[0][1] = 1.0
 
     for epoch in range(100 * 128):
 
@@ -166,6 +166,7 @@ def main(args):
         flat_step = adam2._compute_step(flat_grad)
         step = flat_step.reshape(1, 784)
         restore_img += step
+        restore_img = restore_img.clip(min=0, max=1.0)
     disp_mnist_array(restore_img)
 
 if __name__ == "__main__":
