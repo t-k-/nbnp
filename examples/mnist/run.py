@@ -64,10 +64,11 @@ def main(args):
     test_x, test_y = test_set
     train_y = get_one_hot(train_y, 10)
 
-    restore_img = np.random.uniform(0, 0.0, (1, 784))
-    # disp_mnist_array(restore_img)
-    # disp_mnist_array(test_x[1])
-    # quit()
+    choose=315
+    restore_img = test_x[choose].reshape((1, 784)).clip(min=0, max=0.6)
+    ####### np.random.uniform(0, 0.0, (1, 784))
+    disp_mnist_array(restore_img, test_y[choose])
+    #quit()
 
     if args.model_type == "cnn":
         train_x = train_x.reshape((-1, 28, 28, 1))
@@ -88,8 +89,8 @@ def main(args):
         net = Net([
             # Dense(200),
             # ReLU(),
-            # Dense(100),
-            # ReLU(),
+            Dense(100),
+            ReLU(),
             Dense(70),
             ReLU(),
             Dense(30),
@@ -99,9 +100,9 @@ def main(args):
     else:
         raise ValueError("Invalid argument model_type! Must be 'cnn' or 'dense'")
 
-    adam2=Adam(lr=4e-2)
-    # loss2=SoftmaxCrossEntropyLoss()
-    loss2=MSELoss()
+    adam2=Adam(lr=args.lr)
+    loss2=SoftmaxCrossEntropyLoss()
+    # loss2=MSELoss()
 
     model = Model(net=net, loss=SoftmaxCrossEntropyLoss(), optimizer=Adam(lr=args.lr))
 
@@ -137,7 +138,7 @@ def main(args):
     # target_layer[0][7] = 1.0
 
     target_layer = np.zeros((1, 10))
-    target_layer[0][1] = 1.0
+    target_layer[0][((9))] = 1.0
 
     for epoch in range(100 * 128):
 
