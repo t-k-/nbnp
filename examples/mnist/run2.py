@@ -134,7 +134,7 @@ def main(args):
 def prefer(args, model, choose):
     img_mean = 0.456
     img_std = 0.224
-    iter_n = 200
+    iter_n = 400
     sigma_start, sigma_end = 0.35, 0.30
 
     opt = Adam(lr=args.lr)
