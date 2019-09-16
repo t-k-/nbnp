@@ -18,8 +18,9 @@ from core.layers import Dense
 from core.layers import Flatten
 from core.layers import ReLU
 from core.layers import Tanh
-from core.losses import MSELoss, MAELoss, MinusLoss
+from core.losses import MSELoss, MAELoss
 from core.losses import SoftmaxCrossEntropyLoss
+from core.model import AutoEncoder
 from core.model import Model
 from core.nn import Net
 from core.optimizer import Adam
@@ -107,20 +108,50 @@ def main(args):
     else:
         raise ValueError("Invalid argument model_type! Must be 'cnn' or 'dense'")
 
+    # specify the encoder and decoder net structure
+    encoder = Net([
+        Dense(256),
+        ReLU(),
+        Dense(64)
+    ])
+
+    decoder = Net([
+        ReLU(),
+        Dense(256),
+        Tanh(),
+        Dense(784),
+        Tanh()
+    ])
+
+    dae = AutoEncoder(encoder=encoder, decoder=decoder, loss=MSELoss(), optimizer=Adam(args.lr))
+    dae.load('output/model.pkl')
+
     model = Model(net=net, loss=SoftmaxCrossEntropyLoss(), optimizer=Adam(lr=args.lr))
     model.load('lenet-relu.pkl')
 
     choose = 1
     img_mean = 0.456
     img_std = 0.224
-    iter_n = 10000
+    iter_n = 1000
     sigma_start, sigma_end = 0.35, 0.30
 
     opt = Adam(lr=args.lr)
     max_img = np.random.normal(img_mean, img_std, (1, 28, 28, 1))
 
+    imagine_digit = test_x[12].reshape(1, 784)
+    imagine_fig = disp(imagine_digit)
+    for j in range(40):
+        pred = model.forward(imagine_digit.reshape(1, 28, 28, 1))
+        pred_label = np.argmax(pred, axis=1)
+        print(j, 'pred:', pred_label)
+        plt.pause(2)
+        imagine_digit = dae.forward(imagine_digit)
+        disp(imagine_digit, imagine_fig)
+    plt.pause(10)
+    quit()
 
     fig = disp(max_img)
+    fig2 = disp(dae.forward(max_img.reshape(1,784)))
 
     grad_fix = np.zeros((1, 10))
     grad_fix[0][choose] = - 1.0
@@ -152,6 +183,11 @@ def main(args):
 
         if epoch % 100 == 0:
             disp(max_img, fig)
+            decode = dae.forward(max_img.reshape(1,784))
+            disp(decode, fig2)
+            decode_pred = model.forward(decode.reshape(1, 28, 28, 1))
+            print(np.argmax(decode_pred, axis=1))
+
             print('#%d: Loss: %.5f, [%d]' % (epoch, loss, pred_label), end=" ")
             print('u=%.3f, std=%.3f, range=(%.3f, %.3f)' %
                 (cur_mean, cur_std, cur_min, cur_max), end=" ")
@@ -160,6 +196,9 @@ def main(args):
 
     print('done')
     disp(max_img, fig)
+    freak_digit = dae.forward(max_img.reshape(1,784))
+    disp(freak_digit, fig2)
+    disp(dae.forward(freak_digit))
     plt.show(block=True)
 
 
