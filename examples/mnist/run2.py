@@ -79,19 +79,18 @@ def main(args):
 
     if args.model_type == "cnn":
         net = Net([
-            Conv2D(kernel=[5, 5, 1, 6], stride=[1, 1], padding="SAME"),
-            ReLU(),
-            MaxPool2D(pool_size=[2, 2], stride=[2, 2]),
-            ReLU(),
-            Conv2D(kernel=[5, 5, 6, 16], stride=[1, 1], padding="SAME"),
-            ReLU(),
-            MaxPool2D(pool_size=[2, 2], stride=[2, 2]),
-            Flatten(),
-            Dense(120),
-            ReLU(),
-            Dense(84),
-            ReLU(),
-            Dense(10)
+            Conv2D(kernel=[5, 5, 1, 6], stride=[1, 1], padding="SAME"), # (1, 28, 28, 6)
+            ReLU(), # (1, 28, 28, 6)
+            MaxPool2D(pool_size=[2, 2], stride=[2, 2]), # (1, 14, 14, 6)
+            Conv2D(kernel=[5, 5, 6, 16], stride=[1, 1], padding="SAME"), # (1, 14, 14, 16)
+            ReLU(), #(1, 14, 14, 16)
+            MaxPool2D(pool_size=[2, 2], stride=[2, 2]), # (1, 7, 7, 16)
+            Flatten(), # (1, 784)
+            Dense(120), # (1, 120)
+            ReLU(), # (1, 120)
+            Dense(84), # (1, 84)
+            ReLU(), # (1, 84)
+            Dense(10) # (1, 10)
         ])
     elif args.model_type == "dense":
         net = Net([
@@ -128,52 +127,49 @@ def main(args):
 
     model = Model(net=net, loss=SoftmaxCrossEntropyLoss(), optimizer=Adam(lr=args.lr))
     model.load('lenet-relu.pkl')
+    for i in range(16):
+        print('prefer', i)
+        prefer(args, model, i)
 
-    choose = 1
+def prefer(args, model, choose):
     img_mean = 0.456
     img_std = 0.224
-    iter_n = 1000
+    iter_n = 200
     sigma_start, sigma_end = 0.35, 0.30
 
     opt = Adam(lr=args.lr)
     max_img = np.random.normal(img_mean, img_std, (1, 28, 28, 1))
 
-    imagine_digit = test_x[12].reshape(1, 784)
-    imagine_fig = disp(imagine_digit)
-    for j in range(40):
-        pred = model.forward(imagine_digit.reshape(1, 28, 28, 1))
-        pred_label = np.argmax(pred, axis=1)
-        print(j, 'pred:', pred_label)
-        plt.pause(2)
-        imagine_digit = dae.forward(imagine_digit)
-        disp(imagine_digit, imagine_fig)
-    plt.pause(10)
-    quit()
-
     fig = disp(max_img)
-    fig2 = disp(dae.forward(max_img.reshape(1,784)))
 
-    grad_fix = np.zeros((1, 10))
-    grad_fix[0][choose] = - 1.0
+    # grad_fix = np.zeros((1, 10))
+    # grad_fix[0][choose] = - 1.0
+
+    grad_fix = np.zeros((1, 14, 14, 16))
+    grad_fix[:,:,:,choose] = -1
 
     for epoch in range(iter_n):
-        pred = model.forward(max_img)
-        pred_label = np.argmax(pred, axis=1)
-        loss = - pred[0][choose]
-        _, grad = model.net.backward(grad_fix)
+        # forward
+        inputs = max_img
+        for layer in model.net.layers[0:4]:
+            inputs = layer.forward(inputs)
+        # backward
+        grad = grad_fix
+        for layer in model.net.layers[0:4][::-1]:
+            grad = layer.backward(grad)
+        # update image
         flat_grad = np.ravel(grad)
         flat_step = opt._compute_step(flat_grad)
         step = flat_step.reshape(max_img.shape)
         max_img += step
-
+        # blur image
         sigma = sigma_start + epoch * (sigma_end - sigma_start) / iter_n
-        max_img = gaussian_blur(max_img, sigma)
-
+        # max_img = gaussian_blur(max_img, sigma)
+        # make image range valid
         cur_mean = max_img.mean()
         cur_std = max_img.std()
         cur_max = max_img.max()
         cur_min = max_img.min()
-
         max_img = (max_img - cur_min) / (cur_max - cur_min)
 
         cur_mean = max_img.mean()
@@ -182,23 +178,15 @@ def main(args):
         cur_min = max_img.min()
 
         if epoch % 100 == 0:
+            loss = - inputs[:,:,:,choose].sum()
             disp(max_img, fig)
-            decode = dae.forward(max_img.reshape(1,784))
-            disp(decode, fig2)
-            decode_pred = model.forward(decode.reshape(1, 28, 28, 1))
-            print(np.argmax(decode_pred, axis=1))
-
-            print('#%d: Loss: %.5f, [%d]' % (epoch, loss, pred_label), end=" ")
+            print('#%d: Loss: %.5f' % (epoch, loss), end=" ")
             print('u=%.3f, std=%.3f, range=(%.3f, %.3f)' %
                 (cur_mean, cur_std, cur_min, cur_max), end=" ")
-            #print('grad range: %.3f, %.3f' % (grad.min(), grad.max()), end=" ")
             print('sigma: %.2f' % sigma)
 
     print('done')
     disp(max_img, fig)
-    freak_digit = dae.forward(max_img.reshape(1,784))
-    disp(freak_digit, fig2)
-    disp(dae.forward(freak_digit))
     plt.show(block=True)
 
 
