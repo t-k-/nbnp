@@ -4,17 +4,13 @@
 
 ## About
 
-tinynn is a lightweight deep learning framework designed with simplicity in mind. It is currently written in Python 3 using Numpy.
-
-The `mini` branch contains the minimal components to run a neural network. The `master` branch has the latest stable code with more components and features. See [Components](#components) below.
+nbnp is forked from tinynn, a lightweight deep learning framework designed with simplicity in mind. It is currently written in Python 3 using Numpy.
 
 ## Getting Started
 
 ### Install
 
 ```bash
-git clone https://github.com/borgwang/tinynn.git
-cd tinynn
 pip install -r requirements.txt
 ```
 
@@ -29,14 +25,6 @@ python examples/nn_paint/run.py
  # reinforcement learning demo (gym environment required)
 python examples/rl/run.py
 ```
-
-
-### Components
-
-- layers: Dense, Convolution2D, MaxPool2D, Dropout
-- activation: ReLU, LeakyReLU, Sigmoid, Tanh
-- losses: SoftmaxCrossEntropy, SigmoidCrossEntropy, MAE, MSE, Huber
-- optimizer: SGD, Adam, Momentum, RMSProp
 
 ## Contribute
 
