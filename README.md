@@ -4,7 +4,7 @@
 
 ## About
 
-nbnp is forked from tinynn, a lightweight deep learning framework designed with simplicity in mind. It is currently written in Python 3 using Numpy.
+nbnp is forked from tinynn, a lightweight neural network framework designed with simplicity in mind. It has the advantage for educational purpose, people can get a high level but detailed technical picture of how neural network frameworks. It is currently written in Python 3 using Numpy.
 
 ## Getting Started
 
